@@ -1,8 +1,11 @@
 package com.github.ingvord.tango;
 
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.Tango.DevVarLongStringArray;
 import fr.esrf.TangoDs.Util;
+import org.omg.CORBA.ORB;
 import org.tango.DeviceState;
+import org.tango.orb.ORBManager;
 import org.tango.server.ServerManager;
 import org.tango.server.annotation.*;
 import org.tango.server.device.DeviceManager;
@@ -96,6 +99,32 @@ public class DataBase {
         return new String[]{
                 //TODO broadcast
         };
+    }
+
+    @Command(name = "DbImportDevice")
+    public DevVarLongStringArray importDevice(String deviceName) throws DevFailed{
+        DevVarLongStringArray result = new DevVarLongStringArray();
+        result.lvalue = new int[]{
+                1,
+                Integer.parseInt(ServerManager.getInstance().getPid())
+        };
+        final ORB orb = ORBManager.getOrb();
+        result.svalue = new String[]{
+                deviceName,
+                orb.object_to_string(manager.getDevice()._this(orb)),
+                Integer.toString(manager.getDevice().SERVER_VERSION),
+                ServerManager.getInstance().getServerName(),
+                ServerManager.getInstance().getHostName(),
+                "",
+                "",
+                DataBase.class.getSimpleName()
+        };
+        return result;
+    }
+
+    @Command(name = "DbGetDeviceInfo")
+    public DevVarLongStringArray getDeviceInfo(String deviceName) throws DevFailed {
+        return importDevice(deviceName);
     }
 
     public static void main(String[] args) {
