@@ -8,7 +8,7 @@
 
     <properties>
         <slf4j-api.version>1.7.5</slf4j-api.version>
-        <jtango.ver>1.0.6</jtango.ver>
+        <jtango.ver>1.0.7-SNAPSHOT</jtango.ver>
         <github.organization>ingvord</github.organization>
         <github.repo>virtual-tango-host</github.repo>
     </properties>

@@ -10,7 +10,7 @@ public class TestDatabase {
 
     @Test
     public void testConnect() throws Exception{
-        Database db = new Database("hzgxenvtest",Integer.toString(10000));
+        Database db = new Database("localhost",Integer.toString(10000));
     }
 
     @Test
