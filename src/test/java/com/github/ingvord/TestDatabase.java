@@ -18,5 +18,4 @@ public class TestDatabase {
         DeviceProxy proxy = new DeviceProxy("tango://localhost:10000/sys/database/2#dbase=no");
         Assert.assertSame(DevState.ON, proxy.state());
     }
-
 }

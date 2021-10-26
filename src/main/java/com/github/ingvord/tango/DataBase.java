@@ -5,11 +5,14 @@ import fr.esrf.Tango.DevVarLongStringArray;
 import fr.esrf.TangoDs.Util;
 import org.omg.CORBA.ORB;
 import org.tango.DeviceState;
+import org.tango.client.database.DeviceExportInfo;
 import org.tango.orb.ORBManager;
 import org.tango.server.ServerManager;
 import org.tango.server.annotation.*;
 import org.tango.server.device.DeviceManager;
+import org.tango.server.servant.DeviceImpl;
 import org.tango.server.servant.ORBUtils2;
+import org.tango.utils.DevFailedUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,7 +22,10 @@ import java.util.stream.Stream;
 
 @Device(transactionType = TransactionType.NONE)
 public class DataBase {
+    public static final String SYS_DATABASE_2 = "sys/database/2";
     private final Properties properties  = new Properties();
+
+    private DbBackend backend;
 
     @DeviceManagement
     private DeviceManager manager;
@@ -30,6 +36,7 @@ public class DataBase {
     public void init() throws DevFailed, IOException {
         ORBUtils2.exportDeviceWithoutDatabase("database", manager.getDevice());
         this.properties.load(new InputStreamReader(DataBase.class.getResourceAsStream("/db.properties")));
+        this.backend = DbBackendFactory.getInstance().createInstance();
     }
 
     @Command(name = "DbGetProperty")
@@ -101,25 +108,33 @@ public class DataBase {
         };
     }
 
+    @Command(name = "DbExportDevice")
+    public void exportDevice(String[] argIn) throws DevFailed{
+        try {
+            this.backend.exportDevice(
+                    new DeviceInfo()
+                            .withDeviceName(argIn[0])
+                            .withIor(argIn[1])
+                            .withHostName(argIn[2])
+                            .withVersion(argIn[3])
+                            .withPid(Integer.parseInt(argIn[4]))
+                            .withDeviceClass(argIn[5])
+            );
+        } catch (Exception e) {
+            throw DevFailedUtils.newDevFailed(e);
+        }
+    }
+
     @Command(name = "DbImportDevice")
     public DevVarLongStringArray importDevice(String deviceName) throws DevFailed{
-        DevVarLongStringArray result = new DevVarLongStringArray();
-        result.lvalue = new int[]{
-                1,
-                Integer.parseInt(ServerManager.getInstance().getPid())
-        };
-        final ORB orb = ORBManager.getOrb();
-        result.svalue = new String[]{
-                deviceName,
-                orb.object_to_string(manager.getDevice()._this(orb)),
-                Integer.toString(manager.getDevice().SERVER_VERSION),
-                ServerManager.getInstance().getServerName(),
-                ServerManager.getInstance().getHostName(),
-                "",
-                "",
-                DataBase.class.getSimpleName()
-        };
-        return result;
+        if(deviceName.equalsIgnoreCase(SYS_DATABASE_2)){
+            return importThis().toDevVarLongStringArray();
+        }
+        try {
+            return this.backend.importDevice(deviceName).toDevVarLongStringArray();
+        } catch (Exception e) {
+            throw DevFailedUtils.newDevFailed(e);
+        }
     }
 
     @Command(name = "DbGetDeviceInfo")
@@ -137,12 +152,31 @@ public class DataBase {
                         "2",
                         "-nodb",
                         "-dlist",
-                        "sys/database/2"
+                        SYS_DATABASE_2
                 }, "Databaseds");
 
     }
 
     public void setManager(DeviceManager manager){
         this.manager = manager;
+    }
+
+    private DeviceInfo importThis() throws DevFailed{
+        var result = new DeviceInfo();
+        var orb = ORBManager.getOrb();
+
+        result.deviceName = SYS_DATABASE_2;
+        result.ior = orb.object_to_string(manager.getDevice()._this(orb));
+        result.version = Integer.toString(DeviceImpl.SERVER_VERSION);
+        result.serverName = ServerManager.getInstance().getServerName();
+        result.hostName = ServerManager.getInstance().getHostName();
+        result.startedOn = "";
+        result.stoppedOn = "";
+        result.deviceClass = manager.getClassName();
+
+        result.pid = Integer.parseInt(ServerManager.getInstance().getPid());
+        result.exported = 1;
+
+        return result;
     }
 }
