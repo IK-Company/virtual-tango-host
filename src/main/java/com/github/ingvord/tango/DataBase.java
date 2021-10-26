@@ -37,6 +37,25 @@ public class DataBase {
         ORBUtils2.exportDeviceWithoutDatabase("database", manager.getDevice());
         this.properties.load(new InputStreamReader(DataBase.class.getResourceAsStream("/db.properties")));
         this.backend = DbBackendFactory.getInstance().createInstance();
+
+        try {
+            var orb = ORBManager.getOrb();
+
+            this.backend.exportDevice(
+                    new DeviceInfo()
+                            .withDeviceName(SYS_DATABASE_2)
+                            .withIor(orb.object_to_string(manager.getDevice()._this(orb)))
+                            .withVersion(Integer.toString(DeviceImpl.SERVER_VERSION))
+                            .withHostName(ServerManager.getInstance().getHostName())
+                            .withServerName(ServerManager.getInstance().getServerName())
+                            .withStartedOn(Long.toString(System.currentTimeMillis()))
+                            .withDeviceClass(manager.getClassName())
+                            .withPid(Integer.parseInt(ServerManager.getInstance().getPid()))
+                            .withExported(true)
+            );
+        } catch (Exception e) {
+            throw DevFailedUtils.newDevFailed(e);
+        }
     }
 
     @Command(name = "DbGetProperty")
@@ -57,10 +76,7 @@ public class DataBase {
 
     @Command(name ="DbGetDeviceDomainList")
     public String[] getDeviceDomainList(String wildcard){
-        return new String[]{
-                "sys"
-                //TODO broadcast
-        };
+        return backend.getDeviceDomainList(wildcard).toArray(String[]::new);
     }
 
     @Command(name ="DbGetDeviceFamilyList")
@@ -78,6 +94,19 @@ public class DataBase {
                 //TODO broadcast
         };
     }
+
+    @Command(name = "DbGetDeviceList")
+    public String[] getDeviceList(String[] argIn){
+        //argIn[0] = TestServer/dev
+        //argIn[1] = TestServer aka Device Class
+        return new String[]{};
+    }
+
+    @Command(name = "DbGetDevicePropertyList")
+    public String[] getDevicePropertyList(String deviceName){
+        return new String[]{};
+    }
+
 
     @Command(name ="DbGetClassList")
     public String[] getClassList(String wildcard){
@@ -127,9 +156,6 @@ public class DataBase {
 
     @Command(name = "DbImportDevice")
     public DevVarLongStringArray importDevice(String deviceName) throws DevFailed{
-        if(deviceName.equalsIgnoreCase(SYS_DATABASE_2)){
-            return importThis().toDevVarLongStringArray();
-        }
         try {
             return this.backend.importDevice(deviceName).toDevVarLongStringArray();
         } catch (Exception e) {
@@ -159,24 +185,5 @@ public class DataBase {
 
     public void setManager(DeviceManager manager){
         this.manager = manager;
-    }
-
-    private DeviceInfo importThis() throws DevFailed{
-        var result = new DeviceInfo();
-        var orb = ORBManager.getOrb();
-
-        result.deviceName = SYS_DATABASE_2;
-        result.ior = orb.object_to_string(manager.getDevice()._this(orb));
-        result.version = Integer.toString(DeviceImpl.SERVER_VERSION);
-        result.serverName = ServerManager.getInstance().getServerName();
-        result.hostName = ServerManager.getInstance().getHostName();
-        result.startedOn = "";
-        result.stoppedOn = "";
-        result.deviceClass = manager.getClassName();
-
-        result.pid = Integer.parseInt(ServerManager.getInstance().getPid());
-        result.exported = 1;
-
-        return result;
     }
 }
