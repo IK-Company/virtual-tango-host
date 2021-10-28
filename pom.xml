@@ -4,7 +4,7 @@
 
     <groupId>com.ik-company.tango</groupId>
     <artifactId>virtual-tango-host</artifactId>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
 
     <properties>
         <slf4j-api.version>1.7.5</slf4j-api.version>
@@ -17,7 +17,7 @@
         <connection>scm:git:git@github.com:${github.organization}/${github.repo}.git</connection>
         <developerConnection>scm:git:git@github.com:${github.organization}/${github.repo}.git</developerConnection>
         <url>https://github.com/${github.organization}/${github.repo}</url>
-        <tag>virtual-tango-host-0.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
