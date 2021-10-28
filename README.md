@@ -19,7 +19,12 @@
    ```xml
    <servers>
         <server>
-          <id>github</id>
+          <id>github-ik</id>
+          <username>YOUR_GITHUB_USER</username>
+          <password>YOUR_GITHUB_TOKEN</password>
+        </server>
+        <server>
+          <id>github-hzg</id>
           <username>YOUR_GITHUB_USER</username>
           <password>YOUR_GITHUB_TOKEN</password>
         </server>
