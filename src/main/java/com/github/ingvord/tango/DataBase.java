@@ -3,9 +3,7 @@ package com.github.ingvord.tango;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevVarLongStringArray;
 import fr.esrf.TangoDs.Util;
-import org.omg.CORBA.ORB;
 import org.tango.DeviceState;
-import org.tango.client.database.DeviceExportInfo;
 import org.tango.orb.ORBManager;
 import org.tango.server.ServerManager;
 import org.tango.server.annotation.*;
@@ -169,21 +167,28 @@ public class DataBase {
     }
 
     public static void main(String[] args) {
-        Util._UseDb = false;
-
-        ServerManager.getInstance().addClass(DataBase.class.getCanonicalName(), DataBase.class);
-        ServerManager.getInstance()
-//                .setUseDb(false)
-                .start(new String[]{
-                        "2",
-                        "-nodb",
-                        "-dlist",
-                        SYS_DATABASE_2
-                }, "Databaseds");
-
+        new Launcher().run();
     }
 
     public void setManager(DeviceManager manager){
         this.manager = manager;
+    }
+
+    public static class Launcher implements Runnable {
+        @Override
+        public void run() {
+            Util._UseDb = false;
+
+            ServerManager.getInstance().addClass(DataBase.class.getCanonicalName(), DataBase.class);
+            ServerManager.getInstance()
+//                .setUseDb(false)
+                    .start(new String[]{
+                            "2",
+                            "-nodb",
+                            "-dlist",
+                            SYS_DATABASE_2
+                    }, "Databaseds");
+
+        }
     }
 }
