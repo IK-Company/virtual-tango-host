@@ -4,7 +4,7 @@
 
     <groupId>com.github.ingvord.tango</groupId>
     <artifactId>virtual-tango-host</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
 
     <properties>
         <slf4j-api.version>1.7.5</slf4j-api.version>
@@ -17,7 +17,7 @@
         <connection>scm:git:git@github.com:${github.organization}/${github.repo}.git</connection>
         <developerConnection>scm:git:git@github.com:${github.organization}/${github.repo}.git</developerConnection>
         <url>https://github.com/${github.organization}/${github.repo}</url>
-        <tag>HEAD</tag>
+        <tag>virtual-tango-host-0.1</tag>
     </scm>
 
     <distributionManagement>
