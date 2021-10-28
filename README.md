@@ -1,5 +1,7 @@
 # virtual Tango host
 
+[![wakatime](https://wakatime.com/badge/user/87464ce7-a479-47b1-b3aa-2548252894d7/project/2c6b26d3-3de6-48fe-ad99-a50f734b7750.svg)](https://wakatime.com/badge/user/87464ce7-a479-47b1-b3aa-2548252894d7/project/2c6b26d3-3de6-48fe-ad99-a50f734b7750)
+
 ### Usage
 
 1. Start a new project
