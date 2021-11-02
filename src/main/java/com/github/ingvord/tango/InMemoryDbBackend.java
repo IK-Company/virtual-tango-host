@@ -21,7 +21,7 @@ public class InMemoryDbBackend implements DbBackend{
 
     @Override
     public void exportDevice(DeviceInfo info) {
-        db.putIfAbsent(info.deviceName, info);
+        db.put(info.deviceName, info);
     }
 
     @Override
@@ -56,6 +56,27 @@ public class InMemoryDbBackend implements DbBackend{
                 .map(key -> key.split("/")[2])
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getDeviceList(String executable, String tangoClass) {
+        return db.entrySet().stream()
+                .filter(entry -> entry.getKey().split("/")[0].equalsIgnoreCase(executable.split("/")[1]))
+                .filter(entry -> entry.getValue().deviceClass.startsWith(tangoClass))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void unExportDevice(String deviceName) {
+        db.replace(deviceName, db.get(deviceName).withExported(false));
+    }
+
+    @Override
+    public void unExportServer(String executable /*executanble/instance*/) {
+        db.keySet().stream()
+                .filter(key -> key.startsWith(executable.split("/")[1]))
+                .forEach(this::unExportDevice);
     }
 
     private static Optional<ConcurrentMap<String, DeviceInfo>> loadEntries(){
