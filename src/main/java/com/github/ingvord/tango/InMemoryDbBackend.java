@@ -1,12 +1,23 @@
 package com.github.ingvord.tango;
 
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 public class InMemoryDbBackend implements DbBackend{
-    private final ConcurrentMap<String, DeviceInfo> db = new ConcurrentHashMap<>();
+    public static final String ENTRIES_FILE = "entriesFile";
+    public static final String TEST_DEVICES_PROPERTIES = "/test.devices.properties";
+    private final ConcurrentMap<String, DeviceInfo> db;
+
+    public InMemoryDbBackend() {
+        db = loadEntries().orElse(new ConcurrentHashMap<>());
+    }
 
     @Override
     public void exportDevice(DeviceInfo info) {
@@ -22,7 +33,45 @@ public class InMemoryDbBackend implements DbBackend{
     public List<String> getDeviceDomainList(String wildcard) {
         return db.keySet().stream()
                 .map(key -> key.split("/")[0])
-                //TODO filter
+                .distinct()
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getDeviceFamilyList(String wildcard) {
+        //TODO checkArgument
+        return db.keySet().stream()
+                .filter(key -> key.split("/")[0].equalsIgnoreCase(wildcard.split("/")[0]))//TODO regex?
+                .map(key -> key.split("/")[1])
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getDeviceMemberList(String wildcard) {
+        //TODO checkArgument
+        return db.keySet().stream()
+                .filter(key ->  key.split("/")[0].equalsIgnoreCase(wildcard.split("/")[0]) &&
+                                key.split("/")[1].equalsIgnoreCase(wildcard.split("/")[1]))//TODO regex?
+                .map(key -> key.split("/")[2])
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private static Optional<ConcurrentMap<String, DeviceInfo>> loadEntries(){
+        try{
+            String entriesFile = System.getProperty(ENTRIES_FILE);
+            Properties entries = new Properties();
+            entries.load(entriesFile == null ?
+                    new InputStreamReader(InMemoryDbBackend.class.getResourceAsStream(TEST_DEVICES_PROPERTIES)) :
+                    new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(entriesFile)))));
+
+            return Optional.of(entries.entrySet().stream()
+                    .map(entry -> Map.entry(entry.getKey().toString(), new DeviceInfo().withDeviceClass(entry.getValue().toString())))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                            (o1, o2) -> o1, ConcurrentHashMap::new)));
+        } catch (IOException e){
+            return Optional.empty();
+        }
     }
 }

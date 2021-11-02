@@ -79,18 +79,12 @@ public class DataBase {
 
     @Command(name ="DbGetDeviceFamilyList")
     public String[] getDeviceFamilyList(String wildcard){
-        return new String[]{
-                "database"
-                //TODO broadcast
-        };
+        return backend.getDeviceFamilyList(wildcard).toArray(String[]::new);
     }
 
     @Command(name ="DbGetDeviceMemberList")
     public String[] getDeviceMemberList(String wildcard){
-        return new String[]{
-                "2"
-                //TODO broadcast
-        };
+        return backend.getDeviceMemberList(wildcard).toArray(String[]::new);
     }
 
     @Command(name = "DbGetDeviceList")
@@ -166,10 +160,6 @@ public class DataBase {
         return importDevice(deviceName);
     }
 
-    public static void main(String[] args) {
-        new Launcher().run();
-    }
-
     public void setManager(DeviceManager manager){
         this.manager = manager;
     }
@@ -178,6 +168,9 @@ public class DataBase {
         @Override
         public void run() {
             Util._UseDb = false;
+
+            final Properties props = System.getProperties();
+            props.put("OAPort", "10000");
 
             ServerManager.getInstance().addClass(DataBase.class.getCanonicalName(), DataBase.class);
             ServerManager.getInstance()
