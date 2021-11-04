@@ -50,7 +50,7 @@
     </repositories>
    ```
 
-3. Implement DbBackend
+3. [Optional] Implement DbBackend
 
    ```java
    public class MyDbBackend implements DbBackend{
@@ -58,6 +58,14 @@
    }
    ```
    
+   To use simple in-memory backend just provide a .properties file with Tango devices (`-DentriesFile=<path-to-file>`):
+
+   ```
+   virtual/test/0=TestServer.class
+   virtual/test/1=TestServer.class
+   #etc
+   ```
+
 4. Register your DbBackend in the DbBackendFactory and start the virtual Tango db
 
    ```java
