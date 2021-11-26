@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ik-company.tango</groupId>
+    <groupId>waltz-controls.tango</groupId>
     <artifactId>virtual-tango-host</artifactId>
     <version>0.5-SNAPSHOT</version>
 
     <properties>
         <slf4j-api.version>1.7.5</slf4j-api.version>
-        <jtango.ver>1.0.7</jtango.ver>
-        <github.organization>ik-company</github.organization>
+        <jtango.ver>1.0.8</jtango.ver>
+        <github.organization>waltz-controls</github.organization>
         <github.repo>virtual-tango-host</github.repo>
     </properties>
 
@@ -51,8 +51,7 @@
             <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
-            <!-- TODO redeploy to ik-->
-            <groupId>de.hereon.tango</groupId>
+            <groupId>org.waltz.tango</groupId>
             <artifactId>server</artifactId>
             <version>${jtango.ver}</version>
         </dependency>
@@ -110,8 +109,8 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <id>github-hzg</id>
-            <url>https://maven.pkg.github.com/hereon-wpi/*</url>
+            <id>github-waltz</id>
+            <url>https://maven.pkg.github.com/waltz-controls/*</url>
         </repository>
     </repositories>
 </project>

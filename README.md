@@ -10,7 +10,7 @@
    
    ```xml
    <dependency>
-     <groupId>com.ik-company.tango</groupId>
+     <groupId>waltz-controls.tango</groupId>
      <artifactId>virtual-tango-host</artifactId>
      <version>0.2</version>
    </dependency>
@@ -21,31 +21,19 @@
    ```xml
    <servers>
         <server>
-          <id>github-ik</id>
-          <username>YOUR_GITHUB_USER</username>
-          <password>YOUR_GITHUB_TOKEN</password>
-        </server>
-        <server>
-          <id>github-hzg</id>
+          <id>github-waltz</id>
           <username>YOUR_GITHUB_USER</username>
           <password>YOUR_GITHUB_TOKEN</password>
         </server>
    </servers>
    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>github-ik</id>
-            <url>https://maven.pkg.github.com/ik-company/*</url>
-        </repository>
         <!-- this one is for JTango -->
         <repository>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <id>github-hzg</id>
-            <url>https://maven.pkg.github.com/hereon-wpi/*</url>
+            <id>github-waltz</id>
+            <url>https://maven.pkg.github.com/waltz-controls/*</url>
         </repository>
     </repositories>
    ```
